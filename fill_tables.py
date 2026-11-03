@@ -3,7 +3,7 @@ from connect_database import connectDatabase
 
 base_url = "https://www.dnd5eapi.co"
 
-# Auslesen
+# reading from API
 
 def get_school_data():
     school_url = f"{base_url}/api/2014/magic-schools/"
@@ -35,18 +35,7 @@ def get_spell_data():
     else:
         print(f"Hat nicht geklappt... {response.status_code}")
 
-
-
-
-# if spell_data:
-#     for id, spell in enumerate(spell_data["results"][:3], start=1):
-#         print(f"ID: {id}")
-#         print(f"Name: {spell["name"]}")
-#         response = requests.get(f"{base_url}{spell["url"]}")
-#         school_description = response.json()
-#         print(school_description["desc"][0])
-
-# Einfüllen
+# Mapping to db
 
 def fill_in():
     
@@ -74,7 +63,7 @@ def fill_in():
     damagetype_data = get_damagetype_data()
     if damagetype_data:
         max_rows = len(damagetype_data["results"])
-        damage_type_ids = {}
+        damage_type_ids = {}    #dict for the FK damage_type_id
 
         for id, damage in enumerate(damagetype_data["results"], start=1):
             response = requests.get(f"{base_url}{damage["url"]}")
@@ -127,7 +116,7 @@ def fill_in():
     school_data = get_school_data()
     if school_data:
         max_rows = len(school_data["results"])
-        school_ids = {}
+        school_ids = {}     #dict for the FK school_id
 
         for id, school in enumerate(school_data["results"], start=1):
             response = requests.get(f"{base_url}{school["url"]}")
@@ -241,7 +230,7 @@ def fill_in():
 
     print("Table 'spells' finished")
 
-# end of fill_in
+# end of fill_in()
     connection.commit()
     print("All tables are filled!")
     cursor.close()
