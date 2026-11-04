@@ -16,6 +16,9 @@ def connectDatabase(password, database=None):
     except mysql.connector.Error as error:
         if error.errno == 1045:
             print("Wrong username or password!")
+        elif error.errno == 1049:
+            print("Database does not exist!")
+            print("Please create the database first.")
         elif error.errno == 2059:
             print("Authentication error!")
         else:

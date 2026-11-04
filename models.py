@@ -63,9 +63,9 @@ class Spell:
 
     def print_info(self):
         print(f"""
-========================================
+✦══════════════════════════════════════✦
 {self.name}
-========================================
+✦══════════════════════════════════════✦
 Spell ID:       {self.spell_id}
 Level:          {self.level}
 School:         {self.school_name}
@@ -103,4 +103,42 @@ Concentration:  {"YES" if self.concentration else "NO"}
         if self.dc_success is not None:
             print(f"DC Success:     {self.dc_success}")
 
-        print("========================================")
+        print("✦══════════════════════════════════════✦")
+
+
+class DamageTypes:
+    def __init__(self, name=None, desc=None):
+        self.name = name
+        self.desc = desc
+
+    def map_from_db(self, row):
+        self.name = row[1]
+        self.desc = row[2]
+
+    def print_info(self):
+        print(f"""
+✦{self.name}✦
+
+Description:
+{self.desc}
+
+        """)
+
+
+class MagicSchools:
+    def __init__(self, name=None, desc=None):
+        self.name = name
+        self.desc = desc
+
+    def map_from_db(self, row):
+        self.name = row[1]
+        self.desc = row[2]
+
+    def print_info(self):
+        print(f"""
+✦{self.name}✦
+
+Description:
+{self.desc}
+
+        """)

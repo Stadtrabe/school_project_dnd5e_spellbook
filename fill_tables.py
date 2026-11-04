@@ -176,7 +176,6 @@ def fill_in(password):
             material = spell_details.get("material")
             components = ", ".join(spell_details["components"])
             components_id = component_ids[components]
-            material = spell_details.get("material")
             range = spell_details["range"]
             casting_time = spell_details["casting_time"]
             ritual = int(spell_details["ritual"])
@@ -227,7 +226,7 @@ def fill_in(password):
                 )
             )
 
-            print(f"\rFilling table 'magicSchools': {id}/{max_rows} rows completed", end="")
+            print(f"\rFilling table 'spells': {id}/{max_rows} rows completed", end="")
 
     print("Table 'spells' finished")
 
