@@ -1,89 +1,79 @@
-class Spell:
-    def __init__(self,
-                spell_id,
-                name,
-                level,
-                school_id,
-                desc,
-                higher_level,
-                damage_type_id,
-                dc_type,
-                dc_success,
-                components_id,
-                material,
-                range,
-                casting_time,
-                ritual,
-                duration,
-                concentration):
+from connect_database import connectDatabase
+from models import Spell
 
-        self.spell_id = spell_id
-        self.name = name
-        self.level = level
-        self.school_id = school_id
-        self.desc = desc
-        self.higher_level = higher_level
-        self.damage_type_id = damage_type_id
-        self.dc_type = dc_type
-        self.dc_success = dc_success
-        self.components_id = components_id
-        self.material = material
-        self.range = range
-        self.casting_time = casting_time
-        self.ritual = ritual
-        self.duration = duration
-        self.concentration = concentration
+def search_by_id(password):
+    connection = connectDatabase(password, "dnd5eSpellbookDB")
+    cursor = connection.cursor()
+    cursorPre = connection.cursor(prepared=True)
 
-    def map_from_db(self, row):
-        self.spell_id = row[0]
-        self.name = row[1]
-        self.level = row[2]
-        self.school_id = row[3]
-        self.desc = row[4]
-        self.higher_level = row[5]
-        self.damage_type_id = row[6]
-        self.dc_type = row[7]
-        self.dc_success = row[8]
-        self.components_id = row[9]
-        self.material = row[10]
-        self.range = row[11]
-        self.casting_time = row[12]
-        self.ritual = row[13]
-        self.duration = row[14]
-        self.concentration = row[15]
+    # PLATZHALTER TEST
+    input_ids = input("Which spells do you want to search for? Enter IDs or ranges separated by spaces (e.g. 1 3-6 100): ").split()
 
-    def print_info(self):
-        print(f"""
-    ========================================
-    {self.name}
-    ========================================
-    ID:             {self.spell_id}
-    Level:          {self.level}
-    School ID:      {self.school_id}
+    if not input_ids:
+        print("No ID entered!")
+        return
 
-    Casting Time:   {self.casting_time}
-    Range:          {self.range}
-    Duration:       {self.duration}
-    Components ID:  {self.components_id}
+    searched_ids = []
 
-    Ritual:         {self.ritual}
-    Concentration:  {self.concentration}
+    try:
+        for id in input_ids:
 
-    Damage Type ID: {self.damage_type_id}
-    DC Type:        {self.dc_type}
-    DC Success:     {self.dc_success}
+            if "-" in id:
 
-    Material:
-    {self.material}
+                if id.count("-") != 1:
+                    print(f"Invalid range: {id}")
+                    return
 
-    Description:
-    {self.desc}
+                start, end = id.split("-")
 
-    Higher Level:
-    {self.higher_level}
-    ========================================
-    """)
+                start = int(start)
+                end = int(end)
 
-def search_by_id():
+                if start > end:
+                    print(f"Invalid range: {id}. Start must be smaller than end.")
+                    return
+
+                searched_ids.extend(range(start, end + 1))
+
+            else:
+                searched_ids.append(int(id))
+
+    except ValueError:
+        print("Invalid input! Please enter numbers or ranges.")
+        return
+
+    searched_ids = list(set(searched_ids))
+
+    placeholders = ", ".join(["%s"] * len(searched_ids))
     
+    search_id_query = f"""
+    SELECT
+        spells.*,
+        magicSchools.name,
+        damageTypes.name,
+        components.components
+    FROM spells
+    INNER JOIN magicSchools
+        ON spells.school_id = magicSchools.school_id
+    LEFT JOIN damageTypes
+        ON spells.damage_type_id = damageTypes.damage_type_id
+    INNER JOIN components
+        ON spells.components_id = components.components_id
+    WHERE spells.spell_id IN ({placeholders})
+    ORDER BY spells.spell_id
+    """
+
     
+    cursorPre.execute(search_id_query, tuple(searched_ids,))
+    result = cursorPre.fetchall()
+    if not result:
+        print(f"No spells found!")
+    else:
+        for row in result:
+            spell = Spell()
+            spell.map_from_db(row)
+            spell.print_info()
+
+    cursor.close()
+    cursorPre.close()
+    connection.close()
