@@ -1,10 +1,27 @@
+import getpass
+
 from create_delete_databases import create_databases, delete_databases
 from fill_tables import fill_in, clear_tables
+from connect_database import connectDatabase
 
 def main():
+
+    password = getpass.getpass(
+        "MySQL password: ",
+        echo_char="*"
+    )
+
+    # Connection Test
+    connection = connectDatabase(password)
+    if connection is None:
+        print("Program closed!")
+        return
+    connection.close()
+
     running = True
 
     while running:
+        
         print("""
         \n
         ---   DnD 5e (2014) Spellbook   ---
@@ -18,16 +35,16 @@ def main():
 
         match choice:
             case "1":
-                createAndDelete()
+                createAndDeleteMenu(password)
             case "2":
-                fillAndClear()
+                fillAndClearMenu(password)
             case "0":
                 print("Programm closed!")
                 running = False
             case _:
                 print("Invalid input!")
 
-def createAndDelete():
+def createAndDeleteMenu(password):
     running = True
     
     while running:
@@ -44,16 +61,16 @@ def createAndDelete():
 
         match choice:
             case "1":
-                create_databases()
+                create_databases(password)
             case "2":
-                delete_databases()
+                delete_databases(password)
             case "0":
                 print("Menu closed!")
                 running = False
             case _:
                 print("Invalid input!")
 
-def fillAndClear():
+def fillAndClearMenu(password):
     running = True
     
     while running:
@@ -70,9 +87,9 @@ def fillAndClear():
 
         match choice:
             case "1":
-                fill_in()
+                fill_in(password)
             case "2":
-                clear_tables()
+                clear_tables(password)
             case "0":
                 print("Menue closed!")
                 running = False

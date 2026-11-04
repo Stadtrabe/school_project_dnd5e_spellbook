@@ -1,8 +1,8 @@
 from connect_database import connectDatabase
 
-def create_databases():
+def create_databases(password):
 
-    connection = connectDatabase()
+    connection = connectDatabase(password)
     if connection is None:
         return
     
@@ -74,12 +74,12 @@ def create_databases():
 
     print("Database created")
 
-def delete_databases():
+def delete_databases(password):
     confirm = input("Do you really want to delete the database? (enter: DELETE) ")
 
     if confirm == "DELETE":
 
-        connection = connectDatabase()       
+        connection = connectDatabase(password)       
         if connection is None:
             return
         

@@ -37,9 +37,9 @@ def get_spell_data():
 
 # Mapping to db
 
-def fill_in():
+def fill_in(password):
     
-    connection = connectDatabase("dnd5eSpellbookDB")
+    connection = connectDatabase(password, "dnd5eSpellbookDB")
     if connection is None:
         return
     
@@ -145,7 +145,8 @@ def fill_in():
         for id, spell in enumerate(spell_data["results"], start=1):
             response = requests.get(f"{base_url}{spell["url"]}")
             spell_details = response.json() 
-            
+
+            spell_id = id
             name = spell["name"]
             level = spell["level"]
             school_index = spell_details["school"]["index"]
@@ -207,7 +208,7 @@ def fill_in():
             
             cursorPre.execute(
             spell_query,(
-                id,
+                spell_id,
                 name,
                 level,
                 school_id,
@@ -238,8 +239,8 @@ def fill_in():
     connection.close()
 
 # clear
-def clear_tables():
-    connection = connectDatabase("dnd5eSpellbookDB")
+def clear_tables(password):
+    connection = connectDatabase(password, "dnd5eSpellbookDB")
     if connection is None:
         return
     cursor = connection.cursor()

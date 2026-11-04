@@ -1,12 +1,11 @@
 import mysql.connector
-import getpass
 
-def connectDatabase(database=None):
+def connectDatabase(password, database=None):
     try:
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            passwd=getpass.getpass("MySQL password: ", echo_char="*"),
+            passwd=password,
             database=database,
             charset="utf8mb4",
             collation="utf8mb4_general_ci"
